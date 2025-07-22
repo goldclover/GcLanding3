@@ -1,4 +1,3 @@
-
 import crypto from 'crypto';
 
 export default async function handler(req, res) {
@@ -43,7 +42,7 @@ export default async function handler(req, res) {
         },
       },
     ],
-    test_event_code: process.env.TEST_EVENT_CODE || undefined
+    test_event_code: process.env.TEST_EVENT_CODE || undefined,
   };
 
   try {
