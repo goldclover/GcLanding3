@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Únete a Ganamos - ¡Regístrate Ahora!</title>
+  <style>
+    /* Mantener aquí todo tu CSS original o vincular un archivo externo */
+    /* Por simplicidad acá corto el CSS, el usuario puede copiar el original */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="registration-card">
+      <div class="logo">G<span class="highlight">♠</span>NAMOS</div>
+      <h1 class="welcome-text">¡Únete a la Diversión!</h1>
+      <div class="bonus-badge">🎁 20% EXTRA DE BONO 🎁</div>
+      <form id="registrationForm">
+        <div class="form-group">
+          <label class="form-label" for="username">Tu Nombre o Apodo</label>
+          <input
+            type="text"
+            id="username"
+            class="form-input"
+            placeholder="Ingresa tu nombre o apodo"
+            required
+          />
+        </div>
+        <button type="submit" class="register-button">🚀 CREAR USUARIO</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Helpers para cookies
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+
+    function getFBC() {
+      const params = new URLSearchParams(window.location.search);
+      const fbclid = params.get('fbclid');
+      if (!fbclid) return null;
+      return `fb.1.${Date.now()}.${fbclid}`;
+    }
+
+    document.getElementById('registrationForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      if (!username) {
+        alert('Por favor ingresa tu nombre o apodo');
+        return;
+      }
+
+      const fbp = getCookie('_fbp');
+      const fbc = getCookie('_fbc') || getFBC();
+
+      const event_id = `event_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
+
+      // Enviar evento CAPI
+      try {
+        await fetch('/api/capi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            event_name: 'Contact',
+            event_id,
+            event_source_url: window.location.href,
+            user_data: {
+              name: username,
+              phone: '5491125463125' // Reemplaza con tu número real
+            },
+            fbp,
+            fbc
+          }),
+        });
+      } catch (error) {
+        console.warn('No se pudo enviar evento CAPI:', error);
+      }
+
+      // Redirigir a WhatsApp
+      const message = `Hola👋 mi nombre es ${username} y quiero un usuario😃`;
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappNumber = '5491125463125'; // Reemplaza con tu número real
+      const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+      window.open(whatsappURL, '_blank');
+    });
+  </script>
+</body>
+</html>
